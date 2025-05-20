@@ -39,7 +39,7 @@ spec:
                 name: monolith
                 port:
                   number: 8080
-          - path: /api/subscription
+          - path: /api/subscriptions
             pathType: Prefix
             backend:
               service:

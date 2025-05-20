@@ -1,0 +1,169 @@
+
+> cinemaabyss-api-tests@1.0.0 test:kubernetes
+> node run-tests.js --environment kubernetes
+
+Running tests against kubernetes environment...
+newman
+
+CinemaAbyss API Tests
+
+❏ Monolith Service
+↳ Health Check
+  GET http://cinemaabyss.example.com/health [404 Not Found, 279B, 28ms]
+  1. Status code is 200
+
+↳ Get All Users
+  GET http://cinemaabyss.example.com/api/users [200 OK, 439B, 8ms]
+  ✓  Status code is 200
+  ✓  Response is an array
+
+↳ Create User
+  POST http://cinemaabyss.example.com/api/users [201 Created, 205B, 10ms]
+  ✓  Status code is 201
+  ✓  Response has id
+
+↳ Get User by ID
+  GET http://cinemaabyss.example.com/api/users?id=6 [200 OK, 200B, 5ms]
+  ✓  Status code is 200
+  ✓  User ID matches
+
+↳ Get All Movies
+  GET http://cinemaabyss.example.com/api/movies [200 OK, 2kB, 15ms]
+  ✓  Status code is 200
+  ✓  Response is an array
+
+↳ Create Movie
+  POST http://cinemaabyss.example.com/api/movies [201 Created, 269B, 11ms]
+  ✓  Status code is 201
+  ✓  Response has id
+
+↳ Get Movie by ID
+  GET http://cinemaabyss.example.com/api/movies?id=10 [200 OK, 264B, 13ms]
+  ✓  Status code is 200
+  ✓  Movie ID matches
+
+↳ Create Payment
+  POST http://cinemaabyss.example.com/api/payments [201 Created, 216B, 8ms]
+  ✓  Status code is 201
+  ✓  Response has id
+
+↳ Get Payment by ID
+  GET http://cinemaabyss.example.com/api/payments?id=6 [200 OK, 208B, 8ms]
+  ✓  Status code is 200
+  ✓  Payment ID matches
+
+↳ Create Subscription
+  POST http://cinemaabyss.example.com/api/subscriptions [201 Created, 259B, 9ms]
+  ✓  Status code is 201
+  ✓  Response has id
+
+↳ Get Subscription by ID
+  GET http://cinemaabyss.example.com/api/subscriptions?id=5 [200 OK, 254B, 16ms]
+  ✓  Status code is 200
+  ✓  Subscription ID matches
+
+❏ Movies Microservice
+↳ Health Check
+  GET http://cinemaabyss.example.com/api/movies/health [404 Not Found, 200B, 6ms]
+  2. Status code is 200
+  3. Status is true
+
+↳ Get All Movies
+  GET http://cinemaabyss.example.com/api/movies [200 OK, 2.13kB, 17ms]
+  ✓  Status code is 200
+  ✓  Response is an array
+
+↳ Create Movie
+  POST http://cinemaabyss.example.com/api/movies [201 Created, 307B, 11ms]
+  ✓  Status code is 201
+  ✓  Response has id
+
+↳ Get Movie by ID
+  GET http://cinemaabyss.example.com/api/movies?id=11 [200 OK, 302B, 8ms]
+  ✓  Status code is 200
+  ✓  Movie ID matches
+
+❏ Events Microservice
+↳ Health Check
+  GET http://cinemaabyss.example.com/api/events/health [200 OK, 148B, 5ms]
+  ✓  Status code is 200
+  ✓  Status is true
+
+↳ Create Movie Event
+  POST http://cinemaabyss.example.com/api/events/movie [201 Created, 360B, 8ms]
+  ✓  Status code is 201
+  ✓  Response has status success
+
+↳ Create User Event
+  POST http://cinemaabyss.example.com/api/events/user [201 Created, 383B, 10ms]
+  ✓  Status code is 201
+  ✓  Response has status success
+
+↳ Create Payment Event
+  POST http://cinemaabyss.example.com/api/events/payment [201 Created, 424B, 8ms]
+  ✓  Status code is 201
+  ✓  Response has status success
+
+❏ Proxy Service
+↳ Health Check
+  GET http://cinemaabyss.example.com/health [404 Not Found, 279B, 5ms]
+  4. Status code is 200
+
+↳ Get All Movies via Proxy
+  GET http://cinemaabyss.example.com/api/movies [200 OK, 2.3kB, 33ms]
+  ✓  Status code is 200
+  ✓  Response is an array
+
+↳ Get All Users via Proxy
+  GET http://cinemaabyss.example.com/api/users [200 OK, 507B, 7ms]
+  ✓  Status code is 200
+  ✓  Response is an array
+
+┌─────────────────────────┬──────────────────┬─────────────────┐
+│                         │         executed │          failed │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              iterations │                1 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│                requests │               22 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│            test-scripts │               22 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│      prerequest-scripts │                0 │               0 │
+├─────────────────────────┼──────────────────┼─────────────────┤
+│              assertions │               42 │               4 │
+├─────────────────────────┴──────────────────┴─────────────────┤
+│ total run duration: 2.9s                                     │
+├──────────────────────────────────────────────────────────────┤
+│ total data received: 8.92kB (approx)                         │
+├──────────────────────────────────────────────────────────────┤
+│ average response time: 11ms [min: 5ms, max: 33ms, s.d.: 6ms] │
+└──────────────────────────────────────────────────────────────┘
+
+  #  failure         detail                                                
+                                                                           
+ 1.  AssertionError  Status code is 200                                    
+                     expected response to have status code 200 but got 404 
+                     at assertion:0 in test-script                         
+                     inside "Monolith Service / Health Check"              
+                                                                           
+ 2.  AssertionError  Status code is 200                                    
+                     expected response to have status code 200 but got 404 
+                     at assertion:0 in test-script                         
+                     inside "Movies Microservice / Health Check"           
+                                                                           
+ 3.  JSONError       Status is true                                        
+                     Unexpected token 'p' at 1:5                           
+                     404 page not found                                    
+                         ^                                                 
+                     at assertion:1 in test-script                         
+                     inside "Movies Microservice / Health Check"           
+                                                                           
+ 4.  AssertionError  Status code is 200                                    
+                     expected response to have status code 200 but got 404 
+                     at assertion:0 in test-script                         
+                     inside "Proxy Service / Health Check"                 
+Newman run completed!
+Total requests: 22
+Failed requests: 0
+Total assertions: 42
+Failed assertions: 4
