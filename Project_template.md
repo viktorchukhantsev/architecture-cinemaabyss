@@ -5,7 +5,15 @@
 1. Спроектируйте to be архитектуру КиноБездны, разделив всю систему на отдельные домены и организовав интеграционное взаимодействие и единую точку вызова сервисов.
 Результат представьте в виде контейнерной диаграммы в нотации С4.
 Добавьте ссылку на файл в этот шаблон
-[ссылка на файл](ссылка)
+
+![Контейнерная диаграмма AS IS](docs/diagrams/container/as_is.png "Контейнерная диаграмма AS IS")
+
+[Контейнерная диаграмма AS IS](docs/diagrams/container/as_is.puml)
+
+![Контейнерная диаграмма TO BE](docs/diagrams/container/to_be.png "Контейнерная диаграмма TO BE")
+
+[Контейнерная диаграмма TO BE](docs/diagrams/container/to_be.puml)
+
 
 # Задание 2
 
@@ -58,6 +66,14 @@
 
 Необходимые тесты для проверки этого API вызываются при запуске npm run test:local из папки tests/postman 
 Приложите скриншот тестов и скриншот состояния топиков Kafka из UI http://localhost:8090 
+
+![Tests suite screenshot](docs/tests/screenshot1.png "Tests suite")
+
+[Отчет тестов](docs/tests/report.txt)
+
+![Kafka topics screenshot](docs/tests/screenshot2.png "Kafka topic screenshot")
+
+![Kafka message screenshot](docs/tests/screenshot3.png "Kafka message screenshot")
 
 # Задание 3
 
@@ -271,10 +287,18 @@ cat .docker/config.json | base64
   ```
   Часть тестов с health-чек упадет, но создание событий отработает.
   Откройте логи event-service и сделайте скриншот обработки событий
+  
+  
+[Отчет тестов](docs/tests-k8s/report.txt)
+
+![Events service screenshot](docs/tests-k8s/evets-screenshot1.png "Events service screenshot")
 
 #### Шаг 3
 Добавьте сюда скриншота вывода при вызове https://cinemaabyss.example.com/api/movies и  скриншот вывода event-service после вызова тестов.
 
+![Movies curl screenshot](docs/tests-k8s/curl-screenshot.png "Movies curl screenshot")
+
+![Events service screenshot](docs/tests-k8s/evets-screenshot1.png "Events service screenshot")
 
 # Задание 4
 Для простоты дальнейшего обновления и развертывания вам как архитектуру необходимо так же реализовать helm-чарты для прокси-сервиса и проверить работу 
@@ -349,6 +373,8 @@ minikube tunnel
 Потом вызовите 
 https://cinemaabyss.example.com/api/movies и приложите скриншот
 
+
+![Movies curl helm screenshot](docs/tests-helm/helm-curl-screenshot.png "Movies helm curl screenshot")
 
 ## Удаляем все
 

@@ -1,0 +1,46 @@
+@startuml
+!include ./C4_Container.puml
+
+Person(user, "Пользователь", "Смотрит видео через мобильное приложение, Web или Smart TV")
+
+System_Boundary(api_gateway, "API Gateway (BFF)") {
+    Container(proxy_service, "Proxy Service", "Go", "для постепенного перехода от монолита к микросервисам")
+}
+
+Container(monolith_service, "Монолит") {
+    ContainerDb(monolith_db, "Monolith DB", "PostgreSQL", "База данных монолита")
+}
+
+System_Boundary(microservices, "Микросервисы") {
+    Container(events_service, "Events Service", "Go", "Обрабатывает коммуникацию между сервисами")
+    
+    Container(movies_service, "Movies Service", "Go", "Метаданные видео") {
+        ContainerDb(movies_db, "Movies DB", "PostgreSQL", "Метаданные, теги, жанры")
+    }
+}
+
+System_Boundary(shared_infra, "Общая инфраструктура") {
+    ContainerQueue(kafka, "Kafka", "Message Broker", "События системы")
+    ContainerQueue(rabbit, "RabbitMQ", "Message Broker", "События от внешней ремендательной системы")
+    Container(ext_recomendation_service, "Recommendation System", "Внешняя рекомендательная система", "Персональные рекомендации")
+    Container(S3, "Storage", "S3", "Исходные видеофайлы")
+}
+
+' Связи
+Rel(user, proxy_service, "API-запросы", "HTTPS")
+
+Rel(proxy_service, monolith_service, "API-запросы", "HTTPS")
+Rel(proxy_service, movies_service, "API-запросы", "HTTPS")
+Rel(proxy_service, events_service, "API-запросы", "HTTPS")
+
+BiRel(monolith_service, kafka, "AsyncAPI", "Kafka")
+Rel(events_service, kafka, "AsyncAPI", "Kafka")
+Rel(monolith_service, S3, "S3", "AWS SDK")
+
+Rel(movies_service, movies_db, "ACID-Транзакции", "pgx")
+Rel(monolith_service, monolith_db, "ACID-транзакции", "pgx")
+
+BiRel(monolith_service, rabbit, "Пользовательские оценки/рекомендации", "AMPQ")
+BiRel(rabbit, ext_recomendation_service, "Рекомендации на основе пользовательских оценок","AMPQ")
+
+@enduml

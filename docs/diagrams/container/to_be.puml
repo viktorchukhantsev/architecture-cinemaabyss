@@ -1,0 +1,65 @@
+@startuml
+!include ./C4_Container.puml
+
+Person(user, "Пользователь", "Смотрит видео через мобильное приложение, Web или Smart TV")
+
+System_Boundary(api_gateway, "API Gateway (BFF)") {
+    Container(bff_mobile, "BFF Mobile", "KrakenD", "Оптимизация для мобильных устройств")
+    Container(bff_web, "BFF Web", "KrakenD", "расширенные метаданные")
+    Container(bff_tv, "BFF Smart TV", "KrakenD", "Поддержка 4K/HDR")
+}
+
+System_Boundary(microservices, "Микросервисы") {
+    Container(user_service, "User Service", "Go", "Управление пользователями") {
+        ContainerDb(user_db, "User DB", "PostgreSQL", "Профили, аутентификация")
+    }
+    
+    Container(content_service, "Content Service", "Go", "Метаданные видео") {
+        ContainerDb(content_db, "Content DB", "PostgreSQL", "Метаданные, теги")
+    }
+    
+    Container(stream_service, "Streaming Service", "Go", "Транскодинг видео") {
+        ContainerDb(video_storage, "Video Storage", "S3", "Исходные видеофайлы")
+    }
+    
+    Container(recomendation_service, "Recomendation Service", "Go", "Пользовательские рекомендации") {
+        ContainerDb(recomendation_db, "Recomendation DB", "PostgreSQL", "Рекомендации для пользователя, рейтинги пользователя")
+    }
+
+    Container(payment_service, "Subscription Service", "Go", "Управление подписками") {
+        ContainerDb(payment_db, "Payment DB", "PostgreSQL", "Транзакции, тарифы")
+    }
+}
+
+System_Boundary(shared_infra, "Общая инфраструктура") {
+    Container(cdn, "CDN", "CloudFront/Akamai", "Доставка видео")
+    ContainerQueue(rabbit, "RabbitMQ", "Message Broker", "События от внешней ремендательной системы")
+    Container(redis, "Redis Cluster", "Cache", "Распределенный кэш")
+    Container(search_db, "Search Engine", "Elasticsearch", "Полнотекстовый поиск")
+    Container(ext_recomendation_service, "Recommendation System", "Внешняя рекомендательная система", "Персональные рекомендации")
+}
+
+' Связи
+Rel(user, bff_mobile, "API-запросы", "HTTPS")
+Rel(user, bff_web, "API-запросы", "HTTPS")
+Rel(user, bff_tv, "API-запросы", "HTTPS")
+
+Rel(api_gateway, user_service, "gRPC", "Аутентификация")
+Rel(api_gateway, content_service, "REST", "Получение метаданных")
+Rel(api_gateway, stream_service, "gRPC", "Запрос видеострима")
+
+Rel(stream_service, cdn, "Push HLS/DASH", "RTMP")
+Rel(stream_service, video_storage, "Чтение/запись", "AWS SDK")
+
+Rel(user_service, user_db, "ACID-Транзакции", "pgx")
+Rel(content_service, content_db, "ACID-транзакции", "pgx")
+Rel(payment_service, payment_db, "ACID-транзакции", "pgx")
+Rel(recomendation_service, recomendation_db, "ACID-транзакции", "pgx")
+
+BiRel(recomendation_service, rabbit, "Пользовательские оценки/рекомендации", "AMPQ")
+BiRel(rabbit, ext_recomendation_service, "Рекомендации на основе пользовательских оценок","AMPQ")
+
+Rel_L(content_service, search_db, "Индексация", "REST API")
+Rel_R(bff_web, redis, "Кэширование сессий", "Redis Protocol")
+
+@enduml
